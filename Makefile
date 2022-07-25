@@ -4,7 +4,7 @@ NEW_REPO_PATH='yourscmprovider.com/youruser/yourrepo'
 
 
 
-BUF_VERSION:=0.55.0
+BUF_VERSION:=1.6.0
 CURRENT_REPO_PATH=$(shell go mod why | tail -n1)
 
 generate:
@@ -34,12 +34,17 @@ init:
 #    (replace yourscmprovider.com/youruser/yourrepo with your cloned repo path):
 # find . -path ./vendor -prune -o -type f \( -name '*.go' -o -name '*.proto' \) -exec sed -i -e "s;github.com/johanbrandhorst/grpc-gateway-boilerplate;yourscmprovider.com/youruser/yourrepo;g" {} +
 # find . -path ./vendor -prune -o -type f \( -name '*.go' -o -name '*.proto' \) -exec sed -i -e "s;${CURRENT_REPO_PATH};${NEW_REPO_PATH};g" {} +
+# The enhancement here is to also clean the go.mod file.
 
 adjust_template:
 ifeq ($(NEW_REPO_PATH),'yourscmprovider.com/youruser/yourrepo')
 	@read -p "What is your new/cloned/forked repository's path? (e.g. ${NEW_REPO_PATH}): " new_repo; \
 	NEW_REPO_PATH=$$new_repo; \
-	find . -path ./vendor -prune -o -type f \( -name '*.go' -o -name '*.proto' \) -exec sed -i -e "s;${CURRENT_REPO_PATH};$$NEW_REPO_PATH;g" {} +
+	find . -path ./vendor -prune -o -type f \( -name '*.go' -o -name '*.proto' -o -name 'go.mod' \) -exec sed -i -e "s;${CURRENT_REPO_PATH};$$NEW_REPO_PATH;g" {} +
 else
-	find . -path ./vendor -prune -o -type f \( -name '*.go' -o -name '*.proto' \) -exec sed -i -e "s;${CURRENT_REPO_PATH};${NEW_REPO_PATH};g" {} +
+	find . -path ./vendor -prune -o -type f \( -name '*.go' -o -name '*.proto' -o -name 'go.mod' \) -exec sed -i -e "s;${CURRENT_REPO_PATH};${NEW_REPO_PATH};g" {} +
 endif
+
+# purge_old removes the excess files and should be used after adjust_template
+purge_old:
+	find . -path ./vendor -o -type f \( -name '*.go-e' -o -name '*.proto-e' -o -name 'go.mod-e' \) | xargs rm
