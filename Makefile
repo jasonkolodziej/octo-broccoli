@@ -8,7 +8,7 @@ BUF_VERSION:=$(shell curl -sSL https://api.github.com/repos/bufbuild/buf/release
                    | grep '"name":' \
                    | head -1 \
                    | cut -d : -f 2,3 \
-                   | tr -d '\",')
+                   | tr -d '[:space:]\",')
 
 CURRENT_REPO_PATH=$(shell go mod why | tail -n1)
 
