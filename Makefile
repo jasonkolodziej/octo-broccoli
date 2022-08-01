@@ -13,7 +13,7 @@ BUF_VERSION:=$(shell curl -sSL https://api.github.com/repos/bufbuild/buf/release
 CURRENT_REPO_PATH=$(shell go mod why | tail -n1)
 
 generate:
-	buf generate
+	buf --debug --verbose generate
 
 lint:
 	buf lint
@@ -28,12 +28,13 @@ install:
   	chmod +x "$(shell go env GOPATH)/bin/buf"
 
 update:
-	buf mod update
+	buf --debug --verbose mod update
 
 init:
-	buf mod init
+	buf --debug --verbose mod init
 
-
+clean:
+	buf --debug --verbose mod clear-cache
 # 1> Install buf with make install, which is necessary for us to generate the Go and OpenAPIv2 files.
 # 2> If you forked this repo, or cloned it into a different directory from the github structure,
 #	 you will need to correct the import paths.
