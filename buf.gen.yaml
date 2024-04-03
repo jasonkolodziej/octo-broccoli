@@ -3,7 +3,7 @@ version: v1
 managed:
   enabled: true
   go_package_prefix:
-    default: github.com/jasonkolodziej/octo-broccoli/proto_generated
+    default: github.com/jasonkolodziej/octo-broccoli/gen
     #    default: ./;proto_generated
     except:
       - buf.build/googleapis/googleapis
