@@ -8,26 +8,29 @@ managed:
     except:
       - buf.build/googleapis/googleapis
       - buf.build/grpc-ecosystem/grpc-gateway
+    #? Overrides the go_package file option value used for specific modules. 
+    #? The override keys must be valid module names. Additionally, the corresponding override values must be a valid 
+    #? Go import path and must not jump context from the current directory. 
+    #? As an example, ../external is invalid. This setting is used for workspace environments, 
+    #? where you have a module that imports from another module in the same workspace, 
+    #? and you need to generate the Go code for each module in different directories. 
+    #? This is particularly relevant for repositories that decouple their private API 
+    #? definitions from their public API definitions.
+    # override:
+    #   buf.build/jasonkolodziej/redact: github.com/jasonkolodziej/protoc-gen-go-redact/gen/redact
 plugins:
-  - remote: buf.build/protocolbuffers/plugins/go:v1.28.0-1
-    out: proto_generated
+  #? Defines a localized protoc plugin for `protoc-gen-go-redact`
+  - plugin: go-redact
+    out: gen
     opt: paths=source_relative
-  - remote: buf.build/grpc/plugins/go:v1.2.0-1
-    out: proto_generated
+    path: bin/protoc-gen-go-redact
+  #? Remote plugins
+  - plugin: buf.build/protocolbuffers/go
+    out: gen
+    opt: paths=source_relative
+  - plugin: buf.build/grpc/go
+    out: gen
     opt: paths=source_relative,require_unimplemented_servers=false
-  - remote: buf.build/grpc-ecosystem/plugins/grpc-gateway:v2.7.2-1
-    out: proto_generated
+  - plugin: buf.build/grpc-ecosystem/gateway
+    out: gen
     opt: paths=source_relative
-#  - remote: buf.build/grpc-ecosystem/plugins/openapiv2:v2.7.2-1
-#    out: third_party/OpenAPI
-#  - remote: buf.build/library/plugins/go:v1.27.1-1
-#    out: proto_generated
-#    opt: paths=source_relative
-#  - remote: buf.build/library/plugins/go-grpc:v1.1.0-2
-#    out: proto_generated
-#    opt: paths=source_relative,require_unimplemented_servers=false
-#  - remote: buf.build/grpc-ecosystem/plugins/grpc-gateway:v2.6.0-1
-#    out: proto_generated
-#    opt: paths=source_relative
-#  - remote: buf.build/grpc-ecosystem/plugins/openapiv2:v2.6.0-1
-#    out: third_party/OpenAPI
