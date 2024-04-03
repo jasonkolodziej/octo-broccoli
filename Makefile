@@ -11,6 +11,25 @@ BUF_VERSION:=$(shell curl -sSL https://api.github.com/repos/bufbuild/buf/release
                    | tr -d '[:space:]\",')
 
 CURRENT_REPO_PATH=$(shell go mod why | tail -n1)
+GIT_REPO_PATH:=$(shell git config --get remote.origin.url)
+# extract the protocol
+proto=$(shell echo ${GIT_REPO_PATH} | grep :// | sed -e's,^\(.*://\).*,\1,g')
+# remove the protocol -- updated
+url=$(shell echo ${GIT_REPO_PATH} | sed -e s,${proto},,g)
+no_tail=$(shell echo ${url} | sed 's/.git.*//')
+# extract the user (if any)
+user=$(shell echo ${url} | grep @ | cut -d@ -f1)
+# # extract the host and port -- updated
+# hostport=$(echo $url | sed -e s,$user@,,g | cut -d/ -f1)
+# # by request host without port
+# host="$(echo $hostport | sed -e 's,:.*,,g')"
+# # by request - try to extract the port
+# port="$(echo $hostport | sed -e 's,^.*:,:,g' -e 's,.*:\([0-9]*\).*,\1,g' -e 's,[^0-9],,g')"
+# # extract the path (if any)
+# path="$(echo $url | grep / | cut -d/ -f2-)"
+
+remote_url:
+	@echo ${no_tail}
 
 generate:
 	buf --debug --verbose generate
